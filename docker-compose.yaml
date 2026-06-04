@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # --- Microservicio 1: AUTH ---
+  db_usuarios:
+    image: mysql:latest
+    container_name: bruma_mysql_auth
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pass_auth
+      MYSQL_DATABASE: db_auth
+    ports:
+      - "3307:3306"
+    volumes:
+      - vol_bruma_auth:/var/lib/mysql
+
+  # --- Microservicio 2: GESTION ---
+  db_productos:
+    image: mysql:latest
+    container_name: bruma_mysql_gestion
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pass_gestion
+      MYSQL_DATABASE: db_gestion
+    ports:
+      - "3308:3306"
+    volumes:
+      - vol_bruma_gestion:/var/lib/mysql
+
+  # --- Microservicio 3: ATENCION ---
+  db_pedidos:
+    image: mysql:latest
+    container_name: bruma_mysql_atencion
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pass_atencion
+      MYSQL_DATABASE: db_atencion
+    ports:
+      - "3309:3306"
+    volumes:
+      - vol_bruma_atencion:/var/lib/mysql
+
+  # --- Microservicio 4: FACTURACION ---
+  db_pagos:
+    image: mysql:latest
+    container_name: bruma_mysql_facturacion
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: bruma_mysql_facturacion
+      MYSQL_DATABASE: db_facturacion
+    ports:
+      - "3310:3306"
+    volumes:
+      - vol_bruma_facturacion:/var/lib/mysql
+
+
+# --- Declaración volúmenes independientes ---
+volumes:
+  vol_mysql_auth:
+  vol_bruma_gestion:
+  vol_bruma_atencion:
+  vol_bruma_facturacion:
