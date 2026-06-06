@@ -56,7 +56,7 @@ services:
 
 # --- Declaración volúmenes independientes ---
 volumes:
-  vol_mysql_auth:
+  vol_bruma_auth:
   vol_bruma_gestion:
   vol_bruma_atencion:
   vol_bruma_facturacion:
