@@ -13,7 +13,7 @@
         <module>bruma-ms-gestion-pedidos</module>
         <module>bruma-ms-atencion-pedidos</module>
         <module>bruma-ms-facturacion</module>
-        <module>bruma-ms-aureka</module>
+        <module>bruma-ms-eureka</module>
         <module>bruma-ms-gateway</module>
     </modules>
 
