@@ -23,14 +23,13 @@ public class Empleado {
     private String nombre;
 
     @NotBlank(message = "El apellido es obligatorio")
-    @Column(nullable = false, length = 100)
+    @Column(name="apellido_paterno", nullable = false, length = 100)
     private String apellidoPaterno;
 
-    @Column( length = 100)
+    @Column(name="apellido_materno",  length = 100)
     private String apellidoMaterno;
 
     @Size(min = 8, max = 8, message = "El DNI debe tener exactamente 8 caracteres")
-    @Pattern(regexp = "\\d{8}", message = "El DNI debe contener solo números")
     @Column(nullable = false, unique = true, length = 8)
     private String dni;
 
@@ -42,7 +41,7 @@ public class Empleado {
     private String cargo;
 
     @PastOrPresent(message = "La fecha de ingreso no puede ser una fecha futura")
-    @Column(nullable = false)
+    @Column(name="fecha_ingreso",nullable = false)
     private LocalDate fechaIngreso;
 
     @Column(nullable = false)
