@@ -1,6 +1,13 @@
 version: '3.8'
 
 services:
+  # --- RABBIT MQ
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
   # --- Microservicio 1: AUTH ---
   db_usuarios:
     image: mysql:latest
