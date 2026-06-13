@@ -5,7 +5,7 @@ import com.cibertec.bruma_ms_atencion_pedidos.api.request.EmpleadoUpdateRequestD
 import com.cibertec.bruma_ms_atencion_pedidos.api.response.EmpleadoResponseDto;
 import com.cibertec.bruma_ms_atencion_pedidos.mapper.EmpleadoMapper;
 import com.cibertec.bruma_ms_atencion_pedidos.model.Empleado;
-import com.cibertec.bruma_ms_atencion_pedidos.repository.EmpleadoRepositoy;
+import com.cibertec.bruma_ms_atencion_pedidos.repository.EmpleadoRepository;
 import com.cibertec.bruma_ms_atencion_pedidos.service.IEmpleadoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,37 +18,37 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EmpleadoServiceImpl implements IEmpleadoService {
 
-    private final EmpleadoRepositoy empleadoRepositoy;
+    private final EmpleadoRepository empleadoRepository;
     private final EmpleadoMapper empleadoMapper;
 
     @Override
     @Transactional
     public EmpleadoResponseDto createEmpleado(EmpleadoCreateRequestDto dto) {
-        if(empleadoRepositoy.existsByDni(dto.getDni())){
+        if(empleadoRepository.existsByDni(dto.getDni())){
             throw new RuntimeException("El DNI ya se encuentra registrado");
         }
         Empleado empleado = empleadoMapper.toEntity(dto);
 
-        Empleado empleadoGuardado = empleadoRepositoy.save(empleado);
+        Empleado empleadoGuardado = empleadoRepository.save(empleado);
         return empleadoMapper.toResponseDto(empleadoGuardado);
     }
 
     @Override
     @Transactional
     public EmpleadoResponseDto updateEmpleado(Long id, EmpleadoUpdateRequestDto dto) {
-        Empleado empleadoExistente = empleadoRepositoy.findById(id)
+        Empleado empleadoExistente = empleadoRepository.findById(id)
                 .orElseThrow(()->new RuntimeException("Empleado no hallado con el Id "+id));
 
         empleadoMapper.updateEntityFromDto(dto, empleadoExistente);
 
-        Empleado empleadoActualizado = empleadoRepositoy.save(empleadoExistente);
+        Empleado empleadoActualizado = empleadoRepository.save(empleadoExistente);
         return empleadoMapper.toResponseDto(empleadoActualizado);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<EmpleadoResponseDto> getAllEmpleados() {
-        return empleadoRepositoy.findAll().stream()
+        return empleadoRepository.findAll().stream()
                 .map(empleadoMapper::toResponseDto)
                 .collect(Collectors.toList());
     }
@@ -56,7 +56,7 @@ public class EmpleadoServiceImpl implements IEmpleadoService {
     @Override
     @Transactional(readOnly = true)
     public EmpleadoResponseDto getEmpleadoById(Long id) {
-        Empleado empleado = empleadoRepositoy.findById(id)
+        Empleado empleado = empleadoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado con ID: " + id));
         return empleadoMapper.toResponseDto(empleado);
     }
@@ -64,16 +64,16 @@ public class EmpleadoServiceImpl implements IEmpleadoService {
     @Override
     @Transactional
     public void deleteEmpleado(Long id) {
-        if (!empleadoRepositoy.existsById(id)) {
+        if (!empleadoRepository.existsById(id)) {
             throw new RuntimeException("No se puede eliminar, empleado no encontrado");
         }
-        empleadoRepositoy.deleteById(id);
+        empleadoRepository.deleteById(id);
     }
 
     @Override
     @Transactional(readOnly = true)
     public EmpleadoResponseDto findByDni(String dni) {
-        Empleado empleado = empleadoRepositoy.findByDni(dni)
+        Empleado empleado = empleadoRepository.findByDni(dni)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado con DNI: " + dni));
         return empleadoMapper.toResponseDto(empleado);
     }
