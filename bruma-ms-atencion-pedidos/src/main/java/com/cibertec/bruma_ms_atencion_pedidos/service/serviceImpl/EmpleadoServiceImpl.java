@@ -64,10 +64,12 @@ public class EmpleadoServiceImpl implements IEmpleadoService {
     @Override
     @Transactional
     public void deleteEmpleado(Long id) {
-        if (!empleadoRepository.existsById(id)) {
-            throw new RuntimeException("No se puede eliminar, empleado no encontrado");
-        }
-        empleadoRepository.deleteById(id);
+        Empleado empleado = empleadoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Empleado no encontrado con el ID: " + id));
+
+        // Borrado lógico: Solo apagamos el interruptor y actualizamos
+        empleado.setEstado(false);
+        empleadoRepository.save(empleado);
     }
 
     @Override

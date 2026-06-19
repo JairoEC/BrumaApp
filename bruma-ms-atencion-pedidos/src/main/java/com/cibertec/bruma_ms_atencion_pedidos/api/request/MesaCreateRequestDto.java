@@ -1,8 +1,9 @@
 package com.cibertec.bruma_ms_atencion_pedidos.api.request;
 
 import jakarta.validation.constraints.*;
+import lombok.Data;
 
-
+@Data
 public class MesaCreateRequestDto {
     @NotBlank(message = "El numero de mesa es obligatorio")
     private String numeroMesa;
