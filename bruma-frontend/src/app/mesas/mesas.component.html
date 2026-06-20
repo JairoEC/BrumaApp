@@ -1,0 +1,145 @@
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">Mapa de Mesas</h2>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalNuevaMesa">+ Nueva Mesa</button>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4" *ngFor="let mesa of listaMesas">
+
+            <div class="card h-100 shadow-sm border-start border-5"
+                [ngClass]="mesa.estadoMesa === 1 ? 'border-success' : 'border-secondary'">
+
+                <div class="card-body text-center">
+                    <div class="display-4 mb-2">🪑</div>
+                    <h3 class="card-title">Mesa {{ mesa.numeroMesa }}</h3>
+                    <p class="text-muted small mb-2">{{ mesa.ubicacion }}</p>
+
+                    <div class="mb-3">
+                        <span class="badge rounded-pill px-3 py-2"
+                            [ngClass]="mesa.estadoMesa === 1 ? 'bg-success' : 'bg-secondary'">
+                            {{ mesa.estadoMesa === 1 ? 'Libre' : 'Ocupada' }}
+                        </span>
+                    </div>
+
+                    <p class="text-muted small mb-3">
+                        👥 Capacidad: {{ mesa.capacidad }} personas
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                        <button (click)="prepararEditar(mesa)"
+                            class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
+                            data-bs-toggle="modal" data-bs-target="#modalEditarMesa" title="Editar mesa">
+                            <i class="bi bi-pencil-square"></i> Editar
+                        </button>
+
+                        <button (click)="eliminarMesa(mesa.id)"
+                            class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1" title="Eliminar mesa">
+                            <i class="bi bi-trash3"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalNuevaMesa" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Registrar Nueva Mesa</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="mb-3">
+                    <label class="form-label">Número de Mesa</label>
+                    <input type="text" class="form-control" [(ngModel)]="nuevaMesa.numeroMesa" placeholder="Ej: 15">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Ubicación</label>
+                    <select class="form-select" [(ngModel)]="nuevaMesa.ubicacion">
+                        <optgroup label="Interiores">
+                            <option value="Salón Principal">Salón Principal</option>
+                            <option value="Barra">Barra</option>
+                            <option value="Junto a la ventana">Junto a la ventana</option>
+                            <option value="Reservado">Reservado</option>
+                        </optgroup>
+                        <optgroup label="Exteriores">
+                            <option value="Terraza">Terraza</option>
+                            <option value="Balcón">Balcón</option>
+                            <option value="Patio Interior">Patio Interior</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Capacidad (Personas)</label>
+                    <input type="number" class="form-control" [(ngModel)]="nuevaMesa.capacidad">
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="guardarMesa()">Guardar
+                    Mesa</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalEditarMesa" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" *ngIf="mesaSeleccionada">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Editar Mesa N° {{ mesaSeleccionada.numeroMesa }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="mb-3">
+                    <label class="form-label">Número de Mesa</label>
+                    <input type="text" class="form-control" [(ngModel)]="mesaSeleccionada.numeroMesa">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Ubicación</label>
+                    <select class="form-select" [(ngModel)]="mesaSeleccionada.ubicacion">
+                        <optgroup label="Interiores">
+                            <option value="Salón Principal">Salón Principal</option>
+                            <option value="Barra">Barra</option>
+                            <option value="Junto a la ventana">Junto a la ventana</option>
+                            <option value="Reservado">Reservado</option>
+                        </optgroup>
+                        <optgroup label="Exteriores">
+                            <option value="Terraza">Terraza</option>
+                            <option value="Balcón">Balcón</option>
+                            <option value="Patio Interior">Patio Interior</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Capacidad (Personas)</label>
+                    <input type="number" class="form-control" [(ngModel)]="mesaSeleccionada.capacidad">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Estado de Ocupación</label>
+                    <select class="form-select" [(ngModel)]="mesaSeleccionada.estadoMesa">
+                        <option [ngValue]="1">Libre (Verde)</option>
+                        <option [ngValue]="2">Ocupada (Gris)</option>
+                    </select>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="guardarEdicion()">Guardar
+                    Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
