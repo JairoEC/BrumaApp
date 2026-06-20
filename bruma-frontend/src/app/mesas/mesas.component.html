@@ -7,18 +7,36 @@
     <div class="row">
         <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4" *ngFor="let mesa of listaMesas">
 
-            <div class="card h-100 shadow-sm border-start border-5"
-                [ngClass]="mesa.estadoMesa === 1 ? 'border-success' : 'border-secondary'">
+            <div class="card h-100 shadow-sm border-start border-5" [ngClass]="{
+                    'border-success': mesa.estadoMesa === 1,
+                    'border-secondary': mesa.estadoMesa === 2,
+                    'border-warning': mesa.estadoMesa === 3
+                }">
 
                 <div class="card-body text-center">
-                    <div class="display-4 mb-2">🪑</div>
+                    <div class="mb-2 mt-2" [ngClass]="{
+         'text-success': mesa.estadoMesa === 1,
+         'text-secondary': mesa.estadoMesa === 2,
+         'text-warning': mesa.estadoMesa === 3
+     }">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor"
+                            viewBox="0 0 24 24">
+                            <path d="M4 7h3v10H4c-1.1 0-2-.9-2-2V9c0-1.1.9-2 2-2z" />
+                            <path d="M20 7h-3v10h3c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z" />
+                            <rect x="8" y="5" width="8" height="14" rx="1" />
+                        </svg>
+                    </div>
                     <h3 class="card-title">Mesa {{ mesa.numeroMesa }}</h3>
                     <p class="text-muted small mb-2">{{ mesa.ubicacion }}</p>
 
                     <div class="mb-3">
-                        <span class="badge rounded-pill px-3 py-2"
-                            [ngClass]="mesa.estadoMesa === 1 ? 'bg-success' : 'bg-secondary'">
-                            {{ mesa.estadoMesa === 1 ? 'Libre' : 'Ocupada' }}
+                        <span class="badge rounded-pill px-3 py-2" [ngClass]="{
+                                'bg-success': mesa.estadoMesa === 1,
+                                'bg-secondary': mesa.estadoMesa === 2,
+                                'bg-warning text-dark': mesa.estadoMesa === 3
+                            }">
+                            {{ mesa.estadoMesa === 1 ? 'Libre' : (mesa.estadoMesa === 2 ? 'Ocupada' : 'Mantenimiento')
+                            }}
                         </span>
                     </div>
 
@@ -43,6 +61,7 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="modalNuevaMesa" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -89,6 +108,7 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="modalEditarMesa" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content" *ngIf="mesaSeleccionada">
@@ -131,6 +151,7 @@
                     <select class="form-select" [(ngModel)]="mesaSeleccionada.estadoMesa">
                         <option [ngValue]="1">Libre (Verde)</option>
                         <option [ngValue]="2">Ocupada (Gris)</option>
+                        <option [ngValue]="3">Mantenimiento (Amarillo)</option>
                     </select>
                 </div>
 

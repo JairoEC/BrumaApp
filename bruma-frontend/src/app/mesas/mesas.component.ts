@@ -17,7 +17,7 @@ export class MesasComponent implements OnInit {
   nuevaMesa: any = {
     numeroMesa: '',
     ubicacion: 'Salón Principal',
-    capacidad: 2,
+    capacidad: '',
     estadoMesa: 1, // 1 = Libre por defecto
     estado: true,
   };
@@ -50,23 +50,32 @@ export class MesasComponent implements OnInit {
 
   // 4. Método para enviar el formulario al backend
   guardarMesa(): void {
+    // 1. Validación de Mesa Duplicada
+    const numeroExiste = this.listaMesas.some(
+      (mesa) => mesa.numeroMesa === this.nuevaMesa.numeroMesa,
+    );
+
+    if (numeroExiste) {
+      alert(
+        `La Mesa ${this.nuevaMesa.numeroMesa} ya se encuentra registrada en el local. Por favor, asigna un número diferente.`,
+      );
+      return;
+    }
+
+    // 2. Si el número está libre, procedemos a guardar en el backend
     this.mesaService.createMesa(this.nuevaMesa).subscribe({
-      next: (respuesta) => {
-        alert('Mesa creada con éxito');
-        this.cargarMesas(); // Recargamos la lista para ver la mesa nueva
-        // Limpiamos el formulario
+      next: () => {
+        this.cargarMesas();
+        // Limpiamos el formulario para la siguiente mesa
         this.nuevaMesa = {
-          numeroMesa: '',
+          numeroMesa: null,
+          capacidad: null,
           ubicacion: 'Salón Principal',
-          capacidad: 2,
           estadoMesa: 1,
           estado: true,
         };
       },
-      error: (err) => {
-        console.error('Error al guardar la mesa:', err);
-        alert('Hubo un error al guardar la mesa.');
-      },
+      error: (err) => alert('Error al guardar la mesa. Verifica la conexión.'),
     });
   }
 
@@ -96,6 +105,32 @@ export class MesasComponent implements OnInit {
             alert('Hubo un error al actualizar la mesa.');
           },
         });
+    }
+  }
+
+  obtenerTextoEstado(estadoMesa: number): string {
+    switch (estadoMesa) {
+      case 1:
+        return 'Disponible';
+      case 2:
+        return 'Ocupada';
+      case 3:
+        return 'Mantenimiento';
+      default:
+        return 'Desconocido';
+    }
+  }
+
+  obtenerColorEstado(estadoMesa: number): string {
+    switch (estadoMesa) {
+      case 1:
+        return 'bg-success text-white border-success';
+      case 2:
+        return 'bg-danger text-white border-danger';
+      case 3:
+        return 'bg-warning text-dark border-warning';
+      default:
+        return 'bg-secondary text-white';
     }
   }
 }
