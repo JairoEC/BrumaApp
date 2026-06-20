@@ -12,4 +12,5 @@ public class ProductoResponseDto {
     private BigDecimal precio;
     private String categoria;
     private Integer stock;
+    private Boolean estado;
 }
