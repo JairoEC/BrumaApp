@@ -1,0 +1,164 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary">Gestión de Pedidos</h2>
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalNuevoPedido">
+      + Nuevo Pedido
+    </button>
+  </div>
+
+  <!-- Lista de pedidos -->
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-dark">
+          <tr>
+            <th class="ps-3">#</th>
+            <th>Cliente ID</th>
+            <th>Fecha</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th class="text-center pe-3">Acciones</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let pedido of listaPedidos">
+            <td class="ps-3 fw-bold">{{ pedido.id }}</td>
+            <td>{{ pedido.clienteId }}</td>
+            <td>{{ pedido.fechaPedido | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>S/ {{ pedido.total?.toFixed(2) }}</td>
+            <td>
+                <span class="badge rounded-pill px-3 py-2" [ngClass]="getBadgeClass(pedido.estado)">
+                  {{ pedido.estado }}
+                </span>
+            </td>
+            <td class="text-center pe-3">
+              <button (click)="prepararEditar(pedido)" class="btn btn-sm btn-outline-primary me-2"
+                      data-bs-toggle="modal" data-bs-target="#modalEditarPedido">
+                <i class="bi bi-pencil-square"></i>
+              </button>
+              <button (click)="eliminarPedido(pedido.id)" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-trash3"></i>
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Nuevo Pedido -->
+<div class="modal fade" id="modalNuevoPedido" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">Generar Nuevo Pedido</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Cliente -->
+        <div class="mb-3">
+          <label class="form-label fw-bold">ID del Cliente *</label>
+          <input type="number" class="form-control" [(ngModel)]="nuevoPedido.clienteId" placeholder="Ej: 1">
+        </div>
+
+        <hr>
+
+        <!-- Agregar productos -->
+        <h6 class="fw-bold mb-3">Agregar Productos</h6>
+        <div class="row g-2 align-items-end mb-3">
+          <div class="col-md-5">
+            <label class="form-label">Producto</label>
+            <select class="form-select" [(ngModel)]="nuevoDetalle.productoId" (change)="onProductoSeleccionado()">
+              <option [ngValue]="null">-- Selecciona un producto --</option>
+              <option *ngFor="let p of listaProductos" [ngValue]="p.id">
+                {{ p.nombre }} - S/ {{ p.precio }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Cantidad</label>
+            <input type="number" class="form-control" [(ngModel)]="nuevoDetalle.cantidad"
+                   (input)="onCantidadCambiada()" min="1">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Subtotal</label>
+            <input type="text" class="form-control" [value]="'S/ ' + nuevoDetalle.subtotal.toFixed(2)" readonly>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-primary w-100" (click)="agregarDetalle()">+ Agregar</button>
+          </div>
+        </div>
+
+        <!-- Tabla de detalles -->
+        <table class="table table-sm table-bordered" *ngIf="nuevoPedido.detalles.length > 0">
+          <thead class="table-secondary">
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio Unit.</th>
+            <th>Subtotal</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let d of nuevoPedido.detalles; let i = index">
+            <td>{{ d.nombreProducto }}</td>
+            <td>{{ d.cantidad }}</td>
+            <td>S/ {{ d.precioUnitario.toFixed(2) }}</td>
+            <td>S/ {{ d.subtotal.toFixed(2) }}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-danger" (click)="quitarDetalle(i)">✕</button>
+            </td>
+          </tr>
+          </tbody>
+          <tfoot>
+          <tr>
+            <td colspan="3" class="text-end fw-bold">Total:</td>
+            <td colspan="2" class="fw-bold text-success">S/ {{ getTotalPedido().toFixed(2) }}</td>
+          </tr>
+          </tfoot>
+        </table>
+
+        <div *ngIf="nuevoPedido.detalles.length === 0" class="text-muted text-center py-3">
+          No hay productos agregados aún.
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal" (click)="guardarPedido()">Generar Pedido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Editar Estado -->
+<div class="modal fade" id="modalEditarPedido" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" *ngIf="pedidoSeleccionado">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Actualizar Estado - Pedido #{{ pedidoSeleccionado.id }}</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Estado</label>
+          <select class="form-select" [(ngModel)]="pedidoSeleccionado.estado">
+            <option value="PENDIENTE">Pendiente</option>
+            <option value="EN_PROCESO">En Proceso</option>
+            <option value="ENTREGADO">Entregado</option>
+            <option value="CANCELADO">Cancelado</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="actualizarEstado()">Actualizar</button>
+      </div>
+    </div>
+  </div>
+</div>
