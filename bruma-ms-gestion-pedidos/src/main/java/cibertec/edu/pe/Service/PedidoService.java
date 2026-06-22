@@ -1,7 +1,10 @@
 package cibertec.edu.pe.Service;
 
+import cibertec.edu.pe.dto.request.PedidoCreateDto;
+import cibertec.edu.pe.dto.response.PedidoResponseDto;
 import cibertec.edu.pe.entity.DetallePedido;
 import cibertec.edu.pe.entity.Pedido;
+import cibertec.edu.pe.mapper.PedidoMapper;
 import cibertec.edu.pe.repository.PedidoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PedidoService {
     private final PedidoRepository pedidoRepository;
+    private final PedidoMapper pedidoMapper;
 
     public List<Pedido> listarTodos() { return pedidoRepository.findAll(); }
 
@@ -20,20 +24,12 @@ public class PedidoService {
 
     public List<Pedido> buscarPorCliente(Long clienteId) { return pedidoRepository.findByClienteId(clienteId); }
 
-    public Pedido guardar(Pedido pedido) {
-        pedido.setFechaPedido(LocalDateTime.now());
-        pedido.setEstado("PENDIENTE");
-        // calcular total automáticamente
-        if (pedido.getDetalles() != null) {
-            pedido.getDetalles().forEach(d -> {
-                d.setSubtotal(d.getCantidad() * d.getPrecioUnitario());
-                d.setPedido(pedido);
-            });
-            double total = pedido.getDetalles().stream()
-                    .mapToDouble(DetallePedido::getSubtotal).sum();
-            pedido.setTotal(total);
-        }
-        return pedidoRepository.save(pedido);
+    public PedidoResponseDto crearPedido(PedidoCreateDto dto){
+        Pedido nuevoPedido = pedidoMapper.toEntity(dto);
+        nuevoPedido.setEstado("PENDIENTE");
+        nuevoPedido.setFechaPedido(LocalDateTime.now());
+        Pedido pedidoSaved = pedidoRepository.save(nuevoPedido);
+        return pedidoMapper.toResponseDto(pedidoSaved);
     }
 
     public Pedido actualizarEstado(Long id, String estado) {

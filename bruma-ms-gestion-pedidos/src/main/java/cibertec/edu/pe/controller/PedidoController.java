@@ -1,6 +1,8 @@
 package cibertec.edu.pe.controller;
 
 import cibertec.edu.pe.Service.PedidoService;
+import cibertec.edu.pe.dto.request.PedidoCreateDto;
+import cibertec.edu.pe.dto.response.PedidoResponseDto;
 import cibertec.edu.pe.entity.Pedido;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,8 +36,9 @@ public class PedidoController {
     }
 
     @PostMapping
-    public ResponseEntity<Pedido> crear(@RequestBody Pedido pedido) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(pedidoService.guardar(pedido));
+    public ResponseEntity<PedidoResponseDto> crear(@RequestBody PedidoCreateDto pedidoDto) {
+        PedidoResponseDto responseDto = pedidoService.crearPedido(pedidoDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @PatchMapping("/{id}/estado")

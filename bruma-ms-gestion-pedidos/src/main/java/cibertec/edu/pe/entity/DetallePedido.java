@@ -3,6 +3,8 @@ package cibertec.edu.pe.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "detalle_pedido")
 @Data
@@ -23,6 +25,6 @@ public class DetallePedido {
 
     private String nombreProducto;  // se guarda para no depender del otro MS
     private Integer cantidad;
-    private Double precioUnitario;
-    private Double subtotal;
+    private BigDecimal precioUnitario;
+    private BigDecimal subtotal;
 }

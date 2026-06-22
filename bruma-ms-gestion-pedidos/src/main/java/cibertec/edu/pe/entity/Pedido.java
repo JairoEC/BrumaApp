@@ -3,6 +3,7 @@ package cibertec.edu.pe.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,11 +21,13 @@ public class Pedido {
     @Column(name = "cliente_id", nullable = false)
     private Long clienteId;
 
+    private Long mesaId;
+    private Long meseroId;
     private LocalDateTime fechaPedido;
     private String estado;
 
     @Column(name = "total")
-    private Double total;
+    private BigDecimal total;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetallePedido> detalles;
