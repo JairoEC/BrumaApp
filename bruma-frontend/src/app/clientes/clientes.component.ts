@@ -47,16 +47,29 @@ export class ClientesComponent implements OnInit {
 
   prepararEditar(cliente: any): void {
     this.clienteSeleccionado = { ...cliente };
+    console.log('Cliente cargado en el modal de edición:', this.clienteSeleccionado);
   }
 
   guardarEdicion(): void {
     if (this.clienteSeleccionado) {
-      this.clienteService.updateCliente(this.clienteSeleccionado.id, this.clienteSeleccionado).subscribe({
+      const idAEnviar = this.clienteSeleccionado.id || this.clienteSeleccionado.idCliente;
+
+      if (!idAEnviar) {
+        alert('Error interno: No se pudo recuperar el ID del cliente seleccionado.');
+        console.error('El objeto clienteSeleccionado no contiene un ID válido:', this.clienteSeleccionado);
+        return;
+      }
+
+      this.clienteService.updateCliente(idAEnviar, this.clienteSeleccionado).subscribe({
         next: () => {
+          alert('Cliente actualizado con éxito!');
           this.cargarClientes();
           this.clienteSeleccionado = null;
         },
-        error: () => alert('Error al actualizar el cliente.')
+        error: (err) => {
+          console.error('Error del servidor al intentar actualizar:', err);
+          alert('Error al actualizar el cliente. Revisa la consola para más detalles.');
+        }
       });
     }
   }
