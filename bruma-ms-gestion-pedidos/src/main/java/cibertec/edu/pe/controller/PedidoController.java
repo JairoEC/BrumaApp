@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/pedidos")
 @RequiredArgsConstructor
@@ -24,14 +25,14 @@ public class PedidoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Pedido> buscar(@PathVariable Long id) {
+    public ResponseEntity<Pedido> buscar(@PathVariable("id") Long id) {
         return pedidoService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/cliente/{clienteId}")
-    public ResponseEntity<List<Pedido>> porCliente(@PathVariable Long clienteId) {
+    public ResponseEntity<List<Pedido>> porCliente(@PathVariable("clienteId") Long clienteId) {
         return ResponseEntity.ok(pedidoService.buscarPorCliente(clienteId));
     }
 
@@ -42,7 +43,7 @@ public class PedidoController {
     }
 
     @PatchMapping("/{id}/estado")
-    public ResponseEntity<Pedido> actualizarEstado(@PathVariable Long id, @RequestParam String estado) {
+    public ResponseEntity<Pedido> actualizarEstado(@PathVariable("id") Long id, @RequestParam("estado") String estado) {
         try {
             return ResponseEntity.ok(pedidoService.actualizarEstado(id, estado));
         } catch (RuntimeException e) {
@@ -51,7 +52,7 @@ public class PedidoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable("id") Long id) {
         pedidoService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
