@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 
 @Component({
   selector: 'app-pedidos',
@@ -13,6 +14,7 @@ import { HttpClient } from '@angular/common/http';
 export class PedidosComponent implements OnInit {
   listaPedidos: any[] = [];
   listaProductos: any[] = [];
+  listaClientes: any[] = []; // 🔥 Agregado para almacenar los clientes
   pedidoSeleccionado: any = null;
 
   nuevoPedido: any = {
@@ -34,19 +36,28 @@ export class PedidosComponent implements OnInit {
   ngOnInit(): void {
     this.cargarPedidos();
     this.cargarProductos();
+    this.cargarClientes(); // 🔥 Cargamos los clientes al iniciar el componente
   }
 
   cargarPedidos(): void {
-    this.http.get<any[]>('http://localhost:8080/api/pedidos').subscribe({
+    this.http.get<any[]>('http://localhost:8084/api/pedidos').subscribe({
       next: (data) => this.listaPedidos = data,
       error: (err) => console.error('Error al cargar pedidos:', err)
     });
   }
 
   cargarProductos(): void {
-    this.http.get<any[]>('http://localhost:8080/api/productos').subscribe({
+    this.http.get<any[]>('http://localhost:8083/api/productos').subscribe({
       next: (data) => this.listaProductos = data.filter(p => p.estado === true),
       error: (err) => console.error('Error al cargar productos:', err)
+    });
+  }
+
+  // 🔥 Nuevo método para traer los clientes desde el backend
+  cargarClientes(): void {
+    this.http.get<any[]>('http://localhost:8084/api/clientes').subscribe({
+      next: (data) => this.listaClientes = data,
+      error: (err) => console.error('Error al cargar clientes:', err)
     });
   }
 
@@ -82,14 +93,15 @@ export class PedidosComponent implements OnInit {
 
   guardarPedido(): void {
     if (!this.nuevoPedido.clienteId) {
-      alert('Ingresa el ID del cliente.');
+      alert('Por favor, selecciona un cliente de la lista.');
       return;
     }
     if (this.nuevoPedido.detalles.length === 0) {
       alert('Agrega al menos un producto al pedido.');
       return;
     }
-    this.http.post<any>('http://localhost:8080/api/pedidos', this.nuevoPedido).subscribe({
+
+    this.http.post<any>('http://localhost:8084/api/pedidos', this.nuevoPedido).subscribe({
       next: () => {
         alert('Pedido generado con éxito!');
         this.cargarPedidos();
@@ -105,19 +117,29 @@ export class PedidosComponent implements OnInit {
 
   actualizarEstado(): void {
     if (this.pedidoSeleccionado) {
-      this.http.patch(`http://localhost:8080/api/pedidos/${this.pedidoSeleccionado.id}/estado?estado=${this.pedidoSeleccionado.estado}`, {}).subscribe({
+      const params = new HttpParams().set('estado', this.pedidoSeleccionado.estado);
+
+      this.http.patch<any>(
+        `http://localhost:8084/api/pedidos/${this.pedidoSeleccionado.id}/estado`,
+        null,
+        { params }
+      ).subscribe({
         next: () => {
+          alert('Estado actualizado con éxito!');
           this.cargarPedidos();
           this.pedidoSeleccionado = null;
         },
-        error: () => alert('Error al actualizar el estado.')
+        error: (err) => {
+          console.error('Error detallado de la actualización:', err);
+          alert('Error al actualizar el estado.');
+        }
       });
     }
   }
 
   eliminarPedido(id: number): void {
     if (confirm('¿Estás seguro de eliminar este pedido?')) {
-      this.http.delete(`http://localhost:8080/api/pedidos/${id}`).subscribe({
+      this.http.delete(`http://localhost:8084/api/pedidos/${id}`).subscribe({
         next: () => this.cargarPedidos(),
         error: (err) => console.error('Error al eliminar:', err)
       });
