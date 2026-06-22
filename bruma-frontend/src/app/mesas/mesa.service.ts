@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class MesaService {
   // Apuntamos al API Gateway (reemplaza el puerto si tu gateway usa otro, ej: 8090 u 8080)
   // Y la ruta exacta que configuraron en el Gateway para el microservicio de atención
-  private apiUrl = 'http://localhost:8080/api/mesas';
+  private apiUrl = 'http://localhost:8083/api/mesas';
 
   constructor(private http: HttpClient) {}
 

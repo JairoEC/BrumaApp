@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class EmpleadoService {
   // Asegúrate de que esta sea la ruta exacta de tu Controller en Spring Boot
-  private apiUrl = 'http://localhost:8080/api/empleados'; 
+  private apiUrl = 'http://localhost:8080/api/empleados';
 
   constructor(private http: HttpClient) { }
 
