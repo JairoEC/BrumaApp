@@ -22,6 +22,7 @@ public class Factura {
     private LocalDateTime fechaCreacion;
     private Long idMesa;
     private Long idCliente;
+    private String email;
     private Double total;
     @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetalleFactura> detalleFactura;

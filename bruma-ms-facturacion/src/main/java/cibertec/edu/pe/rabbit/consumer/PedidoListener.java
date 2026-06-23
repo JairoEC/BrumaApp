@@ -33,7 +33,7 @@ public class PedidoListener {
         ComprobanteEmail comprobante = comprobanteEmailService.obtenerOCrear(factura, evento.getEmail());
 
         try{
-            emailFacturaService.enviarComprobante(evento.getEmail(), factura);
+            emailFacturaService.enviarCorreo(evento.getEmail(), factura);
             comprobanteEmailService.marcarEnviado(comprobante);
         } catch (Exception e){
             comprobanteEmailService.marcarFallido(comprobante, e.getMessage());
