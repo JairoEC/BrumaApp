@@ -1,22 +1,22 @@
 import { Component } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule],
+  imports: [RouterOutlet, RouterModule, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
   title = 'bruma-frontend';
 
-  // 1. Inyectamos el Router en el constructor
+  // Inyectamos el servicio Router en el constructor para escuchar las rutas
   constructor(private router: Router) {}
 
-  // 2. Creamos la función que valida si estamos en el Login
+  // Función que verifica si el usuario está en la pantalla de login
   esRutaLogin(): boolean {
-    return this.router.url === '/login' || this.router.url === '/';
+    return this.router.url.includes('/login');
   }
 }
