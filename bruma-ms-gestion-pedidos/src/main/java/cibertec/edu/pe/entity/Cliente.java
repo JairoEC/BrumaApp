@@ -16,7 +16,7 @@ public class Cliente {
 
     @Column(nullable = false)
     private String nombre;
-
+    private String dni;
     private String apellido;
     private String email;
     private String telefono;
