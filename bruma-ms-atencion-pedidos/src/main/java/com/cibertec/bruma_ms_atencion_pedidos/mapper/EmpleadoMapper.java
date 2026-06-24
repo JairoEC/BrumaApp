@@ -13,6 +13,6 @@ public interface EmpleadoMapper {
     // Convierte la Entidad a tu DTO de respuesta
     EmpleadoResponseDto toResponseDto(Empleado empleado);
 
-    // Método para actualizar una entidad existente con datos de un DTO
+    // Metodo para actualizar una entidad existente con datos de un DTO
     void updateEntityFromDto(EmpleadoUpdateRequestDto dto, @MappingTarget Empleado empleado);
 }

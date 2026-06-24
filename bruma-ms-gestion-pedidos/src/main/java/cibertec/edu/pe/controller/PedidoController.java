@@ -4,12 +4,15 @@ import cibertec.edu.pe.Service.PedidoService;
 import cibertec.edu.pe.dto.request.PedidoCreateDto;
 import cibertec.edu.pe.dto.response.PedidoResponseDto;
 import cibertec.edu.pe.entity.Pedido;
+import cibertec.edu.pe.rabbit.service.PedidoFacturacionService;
+import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -18,7 +21,7 @@ import java.util.List;
 public class PedidoController {
 
     private final PedidoService pedidoService;
-
+    private final PedidoFacturacionService pedidoFacturacionService;
     @GetMapping
     public ResponseEntity<List<Pedido>> listar() {
         return ResponseEntity.ok(pedidoService.listarTodos());
@@ -55,5 +58,15 @@ public class PedidoController {
     public ResponseEntity<Void> eliminar(@PathVariable("id") Long id) {
         pedidoService.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/enviar-comprobante/{id}")
+    public ResponseEntity<Optional<Pedido>> enviarComprobante(@PathVariable("id") Long id){
+        Optional<Pedido> pedido = pedidoService.buscarPorId(id);
+        if (pedido.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        pedidoFacturacionService.enviarComprobante(pedido.get());
+        return ResponseEntity.ok().body(pedido);
     }
 }

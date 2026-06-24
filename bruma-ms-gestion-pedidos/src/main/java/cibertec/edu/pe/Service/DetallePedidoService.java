@@ -5,14 +5,18 @@ import cibertec.edu.pe.dto.request.DetallePedidoUpdateDto;
 import cibertec.edu.pe.dto.response.DetallePedidoResponseDto;
 import cibertec.edu.pe.entity.DetallePedido;
 import cibertec.edu.pe.entity.Pedido;
+import cibertec.edu.pe.feignclient.client.ProductoClient;
+import cibertec.edu.pe.feignclient.dto.ProductoClientDto;
 import cibertec.edu.pe.mapper.DetallePedidoMapper;
 import cibertec.edu.pe.repository.DetallePedidoRepository;
 import cibertec.edu.pe.repository.PedidoRepository;
+import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -23,24 +27,39 @@ public class DetallePedidoService {
     private final DetallePedidoRepository detallePedidoRepository;
     private final DetallePedidoMapper detallePedidoMapper;
     private final PedidoRepository pedidoRepository;
+    private final ProductoClient productoClient;
 
     public List<DetallePedidoResponseDto> crearDetallePedido(List<DetallePedidoCreateDto> detalles){
+        Pedido pedido = pedidoRepository.findById(detalles.get(0).getPedidoId()).get();
+        if(pedido == null){
+            new NotFoundException("Error pedido no encontrado");
+        }
         List<DetallePedido> listaDetalles = detalles.stream().map(
                 (det)-> detallePedidoMapper.toEntity(det)).toList();
+
+        List<DetallePedido> detallesCreados = new ArrayList<DetallePedido>();
+        listaDetalles.forEach(detallePedido -> {
+            ProductoClientDto productoClientDto = productoClient.getProductoPorId(detallePedido.getProductoId());
+            detallePedido.setId(detallePedido.getId());
+            detallePedido.setPedido(pedido);
+            detallePedido.setNombreProducto(productoClientDto.getNombre());
+            detallePedido.setPrecioUnitario(productoClientDto.getPrecio());
+            detallePedido.setSubtotal(
+                    detallePedido.getPrecioUnitario().multiply(
+                            BigDecimal.valueOf(detallePedido.getCantidad())));
+            detallesCreados.add(detallePedidoRepository.save(detallePedido));
+        });
+
         BigDecimal totalVenta = listaDetalles.stream()
                 .map(det -> {
                     // 1. Calcular el subtotal de este objeto específico
-                    BigDecimal subtotal = det.getPrecioUnitario().multiply(BigDecimal.valueOf(det.getCantidad()));
-
-                    // 2. Setear el subtotal en el objeto actual
-                    det.setSubtotal(subtotal);
-
-                    // 3. Retornar el subtotal para que el Stream lo acumule después
+                    BigDecimal subtotal = det.getSubtotal();
                     return subtotal;
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        listaDetalles.forEach(detallePedido -> detallePedidoRepository.save(detallePedido));
-        return listaDetalles.stream().map(det->detallePedidoMapper.toResponseDto(det)).toList();
+
+
+        return detallesCreados.stream().map(det->detallePedidoMapper.toResponseDto(det)).toList();
     }
 
     @Transactional
@@ -95,6 +114,14 @@ public class DetallePedidoService {
 
         // 5. Recalcular y actualizar el total del Pedido principal
         this.actualizarTotalPedido(pedido.getId());
+    }
+
+    public List<DetallePedidoResponseDto> buscarDetallePedido(Long id){
+        List<DetallePedido> detalles = detallePedidoRepository.findByPedidoId(id);
+        List<DetallePedidoResponseDto> detallesDto = detalles.stream().map(
+            det -> detallePedidoMapper.toResponseDto(det)
+        ).toList();
+        return detallesDto;
     }
 
     private void actualizarTotalPedido(Long pedidoId) {
