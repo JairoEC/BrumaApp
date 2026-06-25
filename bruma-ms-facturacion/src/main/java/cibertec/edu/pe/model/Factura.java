@@ -1,5 +1,9 @@
 package cibertec.edu.pe.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +32,9 @@ public class Factura {
     private String email;
     private BigDecimal total;
     @OneToOne(mappedBy = "factura")
+    @JsonIgnoreProperties("factura")
     private ComprobanteEmail comprobanteEmail;
     @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("factura")
     private List<DetalleFactura> detalleFactura;
 }

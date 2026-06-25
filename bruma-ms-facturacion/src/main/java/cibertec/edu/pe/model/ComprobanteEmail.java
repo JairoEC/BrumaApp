@@ -1,5 +1,8 @@
 package cibertec.edu.pe.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +22,7 @@ public class ComprobanteEmail {
     private Long id;
     @OneToOne
     @JoinColumn(name = "factura_id", referencedColumnName = "id")
+    @JsonIgnoreProperties("comprobanteEmail")
     private Factura factura;
     private String emailDestinatario;
     @Enumerated(EnumType.STRING)

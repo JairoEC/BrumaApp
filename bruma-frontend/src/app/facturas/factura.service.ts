@@ -6,11 +6,12 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class FacturaService {
-  private apiUrl = 'http://localhost:8085/factura';
+  private apiUrl = 'http://localhost:8085/api/factura';
 
   constructor(private http: HttpClient) {}
 
   getFacturas(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
+
 }

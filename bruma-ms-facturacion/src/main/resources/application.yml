@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: microservicio-facturacion
+    name: BRUMA-MS-FACTURACION
   datasource:
     url: jdbc:mysql://localhost:3310/db_facturacion?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
@@ -45,6 +45,4 @@ spring:
             fallback: false
 eureka:
   client:
-    enabled: false
-    register-with-eureka: false
-    fetch-registry: false
+    enabled: true
