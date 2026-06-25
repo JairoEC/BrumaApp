@@ -15,8 +15,10 @@ import java.time.LocalDateTime;
 @Builder
 public class ComprobanteEmail {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne
+    @JoinColumn(name = "factura_id", referencedColumnName = "id")
     private Factura factura;
     private String emailDestinatario;
     @Enumerated(EnumType.STRING)

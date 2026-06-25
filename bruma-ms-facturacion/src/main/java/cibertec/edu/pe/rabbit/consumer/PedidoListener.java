@@ -74,7 +74,7 @@ public class PedidoListener {
         ComprobanteEmail comprobante = comprobanteEmailService.obtenerOCrear(facturaFinded, evento.getEmail());
         log.info("----------FACTURA OBTENIDA----------");
         try{
-            emailFacturaService.enviarCorreo(evento.getEmail(), factura);
+            emailFacturaService.enviarCorreo(evento.getEmail(), facturaFinded);
             log.info("----------CORREO ENVIADO----------");
             comprobanteEmailService.marcarEnviado(comprobante);
             log.info("----------MARCADO COMO ENVIADO----------");

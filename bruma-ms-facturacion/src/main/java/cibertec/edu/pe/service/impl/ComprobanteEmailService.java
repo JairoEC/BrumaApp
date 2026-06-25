@@ -7,6 +7,8 @@ import cibertec.edu.pe.repository.ComprobanteEmailRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class ComprobanteEmailService {
@@ -18,24 +20,30 @@ public class ComprobanteEmailService {
                 .factura(factura)
                 .estado(EnumEmail.PENDIENTE)
                 .mensajeError("Sin error")
+                .intentos(0)
                 .build();
         return comprobanteEmailRepository.save(comprobante);
     }
 
     public ComprobanteEmail marcarEnviado(ComprobanteEmail comprobante){
         comprobante.setEstado(EnumEmail.ENVIADO);
+        comprobante.setFechaIntento(LocalDateTime.now());
+        comprobante.setIntentos(comprobante.getIntentos()+1);
         return comprobanteEmailRepository.save(comprobante);
     }
 
     public ComprobanteEmail marcarFallido(ComprobanteEmail comprobante,String error){
         comprobante.setEstado(EnumEmail.FALLIDO);
+        comprobante.setFechaIntento(LocalDateTime.now());
+        comprobante.setIntentos(comprobante.getIntentos()+1);
         comprobante.setMensajeError(error);
         return comprobanteEmailRepository.save(comprobante);
     }
     public ComprobanteEmail obtenerOCrear(Factura factura, String email){
-
-        return comprobanteEmailRepository
-                .findById(factura.getId())
-                .orElseGet(() -> crearPendiente(factura, email));
+        if(!comprobanteEmailRepository.existsByFacturaId(factura.getId())){
+            crearPendiente(factura, email);
+        }
+        ComprobanteEmail comprobanteEmail = comprobanteEmailRepository.findByFacturaId(factura.getId());
+        return comprobanteEmail;
     }
 }

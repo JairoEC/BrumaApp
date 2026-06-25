@@ -27,6 +27,8 @@ public class Factura {
     private Long idCliente;
     private String email;
     private BigDecimal total;
+    @OneToOne(mappedBy = "factura")
+    private ComprobanteEmail comprobanteEmail;
     @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<DetalleFactura> detalleFactura;
 }
