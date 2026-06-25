@@ -28,6 +28,7 @@ public class ClienteService {
             c.setEmail(datos.getEmail());
             c.setTelefono(datos.getTelefono());
             c.setDireccion(datos.getDireccion());
+            c.setDni(datos.getDni());
             return clienteRepository.save(c);
         }).orElseThrow(() -> new RuntimeException("Cliente no encontrado: " + id));
     }

@@ -27,9 +27,6 @@ public class FacturaServiceImp implements FacturaService {
 
     @Override
     public Factura crearFactura(Factura factura) {
-        factura.getDetalleFactura().forEach(
-                detalle -> detalle.setFactura(factura)
-        );
         Factura facturaGuardada = facturaRepository.save(factura);
         return facturaGuardada;
     }

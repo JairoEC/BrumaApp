@@ -22,6 +22,12 @@ spring:
     port: 5672
     username: guest
     password: guest
+    listener:
+      simple:
+        retry:
+          max-attempts: 3
+          initial-interval: 2000
+          enabled: true
   mail:
     host: smtp-relay.brevo.com
     port: 465
@@ -37,3 +43,8 @@ spring:
             port: 465
             class: javax.net.ssl.SSLSocketFactory
             fallback: false
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false

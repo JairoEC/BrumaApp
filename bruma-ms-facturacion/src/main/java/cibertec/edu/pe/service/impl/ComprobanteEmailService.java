@@ -33,6 +33,7 @@ public class ComprobanteEmailService {
         return comprobanteEmailRepository.save(comprobante);
     }
     public ComprobanteEmail obtenerOCrear(Factura factura, String email){
+
         return comprobanteEmailRepository
                 .findById(factura.getId())
                 .orElseGet(() -> crearPendiente(factura, email));

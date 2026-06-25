@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 
 @Entity
@@ -20,8 +22,8 @@ public class DetalleFactura {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer cantidad;
-    private Double precioUnitario;
-    private Double subTotal;
+    private BigDecimal precioUnitario;
+    private BigDecimal subTotal;
     @ManyToOne
     @JoinColumn(name = "factura_id")
     @JsonIgnoreProperties("detalleFactura")

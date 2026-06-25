@@ -5,13 +5,14 @@ import cibertec.edu.pe.dto.request.DetallePedidoUpdateDto;
 import cibertec.edu.pe.dto.response.DetallePedidoResponseDto;
 import cibertec.edu.pe.entity.DetallePedido;
 import cibertec.edu.pe.entity.Pedido;
-import cibertec.edu.pe.feignclient.client.ProductoClient;
+import cibertec.edu.pe.feignclient.client.AtencionFeignClient;
 import cibertec.edu.pe.feignclient.dto.ProductoClientDto;
 import cibertec.edu.pe.mapper.DetallePedidoMapper;
 import cibertec.edu.pe.repository.DetallePedidoRepository;
 import cibertec.edu.pe.repository.PedidoRepository;
 import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,13 +22,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DetallePedidoService {
     private final DetallePedidoRepository detallePedidoRepository;
     private final DetallePedidoMapper detallePedidoMapper;
     private final PedidoRepository pedidoRepository;
-    private final ProductoClient productoClient;
+    private final AtencionFeignClient atencionFeignClient;
 
     public List<DetallePedidoResponseDto> crearDetallePedido(List<DetallePedidoCreateDto> detalles){
         Pedido pedido = pedidoRepository.findById(detalles.get(0).getPedidoId()).get();
@@ -39,7 +41,8 @@ public class DetallePedidoService {
 
         List<DetallePedido> detallesCreados = new ArrayList<DetallePedido>();
         listaDetalles.forEach(detallePedido -> {
-            ProductoClientDto productoClientDto = productoClient.getProductoPorId(detallePedido.getProductoId());
+            ProductoClientDto productoClientDto = atencionFeignClient.getProductoPorId(detallePedido.getProductoId());
+            log.info(productoClientDto.toString());
             detallePedido.setId(detallePedido.getId());
             detallePedido.setPedido(pedido);
             detallePedido.setNombreProducto(productoClientDto.getNombre());
@@ -58,6 +61,8 @@ public class DetallePedidoService {
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        pedido.setTotal(totalVenta);
+        pedidoRepository.save(pedido);
 
         return detallesCreados.stream().map(det->detallePedidoMapper.toResponseDto(det)).toList();
     }

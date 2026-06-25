@@ -13,11 +13,11 @@ import java.math.BigInteger;
 @NoArgsConstructor
 @Builder
 public class DetalleEventDto {
-    // Extraídos directamente de la clave compuesta DetallePedidoId
-    private Long pedidoId;
+    private String nombreProducto;
     private Long productoId;
 
     // Datos cuantitativos del detalle
-    private BigInteger cantidad;
+    private Integer cantidad;
+    private BigDecimal precioUnitario;
     private BigDecimal subtotal;
 }

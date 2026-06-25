@@ -26,6 +26,8 @@ public class PedidoService {
 
     public PedidoResponseDto crearPedido(PedidoCreateDto dto){
         Pedido nuevoPedido = pedidoMapper.toEntity(dto);
+        nuevoPedido.setMesaId(dto.getMesaId());
+        nuevoPedido.setMeseroId(dto.getMeseroId());
         nuevoPedido.setEstado("PENDIENTE");
         nuevoPedido.setFechaPedido(LocalDateTime.now());
         Pedido pedidoSaved = pedidoRepository.save(nuevoPedido);

@@ -16,7 +16,7 @@ public class PedidoProducer {
     public void enviarPedidoAFacturar(PedidoEventDto evento) {
         log.info("Enviando pedido ID: {} a la cola de facturación para el email: {}",
                 evento.getPedidoId(), evento.getEmail());
-
+        log.info(evento.toString());
         // Enviamos el objeto directo al Exchange usando la Routing Key
         rabbitTemplate.convertAndSend(
                 RabbitProducerConfig.EXCHANGE_NAME,

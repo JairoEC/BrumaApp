@@ -13,9 +13,13 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class PedidoEventDto {
+    private Long clienteId;
+    private String clienteDni;
+    private String email;
+
     private Long pedidoId;
     private Long mesaId;
-    private String email;
     private BigDecimal total;
+
     private List<DetalleEventDto> detalles;
 }
