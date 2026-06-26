@@ -146,6 +146,13 @@ export class PedidosComponent implements OnInit {
     }
   }
 
+  enviarFactura(id: number): void{
+    this.http.get(`http://localhost:8084/api/pedidos/enviar-comprobante/${id}`).subscribe({
+      next: () => this.cargarPedidos(),
+      error: (err) => console.error('Error al enviar correo:', err)
+    })
+  }
+
   getBadgeClass(estado: string): string {
     switch(estado) {
       case 'PENDIENTE': return 'bg-warning text-dark';
