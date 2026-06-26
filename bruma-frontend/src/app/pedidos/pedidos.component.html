@@ -70,6 +70,27 @@
           </select>
         </div>
 
+        <div class="mb-3">
+          <label class="form-label fw-bold">Mesa *</label>
+          <select class="form-select" [(ngModel)]="nuevoPedido.mesaId">
+            <option [ngValue]="null">-- Seleccionar --</option>
+            <option *ngFor="let m of listaMesas" [ngValue]="m.id">
+              Mesa {{ m.numeroMesa }} - {{m.ubicacion}}
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Mesero *</label>
+          <select class="form-select" [(ngModel)]="nuevoPedido.meseroId">
+            <option [ngValue]="null">-- Seleccionar --</option>
+            <option *ngFor="let me of listaMeseros" [ngValue]="me.id">
+              {{ me.nombre }} {{ me.apellidoPaterno }} - id: {{me.id}}
+            </option>
+          </select>
+        </div>
+
+
         <hr>
 
         <h6 class="fw-bold mb-3">Agregar Productos</h6>

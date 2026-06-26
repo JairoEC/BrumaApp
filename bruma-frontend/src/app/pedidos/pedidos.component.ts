@@ -16,14 +16,20 @@ export class PedidosComponent implements OnInit {
   listaProductos: any[] = [];
   listaClientes: any[] = []; // 🔥 Agregado para almacenar los clientes
   pedidoSeleccionado: any = null;
+  listaDetalles: any[]=[];
+  listaMesas: any[]=[];
+  listaMeseros: any[]=[];
 
   nuevoPedido: any = {
     clienteId: null,
     estado: 'PENDIENTE',
+    mesaId:null,
+    meseroId:null,
     detalles: []
   };
 
   nuevoDetalle: any = {
+    pedidoId:null,
     productoId: null,
     nombreProducto: '',
     cantidad: 1,
@@ -37,6 +43,8 @@ export class PedidosComponent implements OnInit {
     this.cargarPedidos();
     this.cargarProductos();
     this.cargarClientes(); // 🔥 Cargamos los clientes al iniciar el componente
+    this.cargarMesas();
+    this.cargarMeseros();
   }
 
   cargarPedidos(): void {
@@ -59,6 +67,25 @@ export class PedidosComponent implements OnInit {
       next: (data) => this.listaClientes = data,
       error: (err) => console.error('Error al cargar clientes:', err)
     });
+  }
+  cargarMesas(): void {
+    this.http.get<any[]>('http://localhost:8083/api/mesas')
+      .subscribe({
+        next: (data) => {
+          this.listaMesas = data;
+        },
+        error: (err) => console.error('Error cargando mesas', err)
+      });
+  }
+
+  cargarMeseros(): void {
+    this.http.get<any[]>('http://localhost:8083/api/empleados')
+      .subscribe({
+        next: (data) => {
+          this.listaMeseros = data;
+        },
+        error: (err) => console.error('Error cargando meseros', err)
+      });
   }
 
   onProductoSeleccionado(): void {
@@ -91,6 +118,11 @@ export class PedidosComponent implements OnInit {
     return this.nuevoPedido.detalles.reduce((acc: number, d: any) => acc + d.subtotal, 0);
   }
 
+  generarPedidoDetallePedido():void{
+    this.guardarPedido()
+    this.guardarDetallePedido()
+  }
+
   guardarPedido(): void {
     if (!this.nuevoPedido.clienteId) {
       alert('Por favor, selecciona un cliente de la lista.');
@@ -101,13 +133,53 @@ export class PedidosComponent implements OnInit {
       return;
     }
 
+    // 1. Guardamos el pedido principal
     this.http.post<any>('http://localhost:8084/api/pedidos', this.nuevoPedido).subscribe({
-      next: () => {
+      next: (pedidoCreado) => {
+        // pedidoCreado debería ser el objeto que viene del backend, ej: { id: 10, ... }
+        const idDelPedido = pedidoCreado.id;
+
+        // 2. Asignamos el ID a los detalles antes de enviarlos
+        const listaParaEnviar = this.nuevoPedido.detalles.map((d: any) => ({
+          ...d,
+          pedidoId: idDelPedido
+        }));
+
+        // 3. Enviamos los detalles
+        this.http.post<any[]>('http://localhost:8084/api/detalle-pedido', listaParaEnviar).subscribe({
+          next: () => {
+            alert('Pedido y detalles guardados con éxito!');
+            this.cargarPedidos();
+            this.nuevoPedido = { clienteId: null, estado: 'PENDIENTE', detalles: [] };
+          },
+          error: (err) => {
+            console.error('Error al guardar detalles:', err);
+            alert('Error al guardar los detalles del pedido.');
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Error al guardar pedido:', err);
+        alert('Error al crear el pedido principal.');
+      }
+    });
+  }
+
+  guardarDetallePedido():void{
+    // Asegúrate de enviar solo la lista, no el objeto que contiene la lista
+    const listaParaEnviar = this.nuevoPedido.detalles;
+    this.http.post<any[]>('http://localhost:8084/api/detalle-pedido', listaParaEnviar)
+    .subscribe({
+      next: (response) => {
         alert('Pedido generado con éxito!');
         this.cargarPedidos();
-        this.nuevoPedido = { clienteId: null, estado: 'PENDIENTE', detalles: [] };
+        // Limpiamos el objeto principal y su lista de detalles
+        this.nuevoPedido.detalles = [];
       },
-      error: () => alert('Error al guardar el pedido.')
+      error: (err) => {
+        console.error('Error detectado:', err);
+        alert('Error al guardar: verifica que los datos sean correctos.');
+      }
     });
   }
 
