@@ -218,11 +218,17 @@ export class PedidosComponent implements OnInit {
     }
   }
 
-  enviarFactura(id: number): void{
+  enviarFactura(id: number): void {
     this.http.get(`http://localhost:8084/api/pedidos/enviar-comprobante/${id}`).subscribe({
-      next: () => this.cargarPedidos(),
-      error: (err) => console.error('Error al enviar correo:', err)
-    })
+      next: () => {
+        alert('Factura enviada al correo con éxito');
+        this.cargarPedidos();
+      },
+      error: (err) => {
+        console.error('Error al enviar correo:', err);
+        alert('No se pudo enviar la factura al correo');
+      }
+    });
   }
 
   getBadgeClass(estado: string): string {
