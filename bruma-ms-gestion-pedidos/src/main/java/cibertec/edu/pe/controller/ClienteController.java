@@ -22,7 +22,7 @@ public class ClienteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> buscar(@PathVariable Long id) {
+    public ResponseEntity<Cliente> buscar(@PathVariable("id") Long id) {
         return clienteService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -34,7 +34,7 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> actualizar(@PathVariable Long id, @RequestBody Cliente cliente) {
+    public ResponseEntity<Cliente> actualizar(@PathVariable("id") Long id, @RequestBody Cliente cliente) {
         try {
             return ResponseEntity.ok(clienteService.actualizar(id, cliente));
         } catch (RuntimeException e) {
@@ -43,8 +43,9 @@ public class ClienteController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable("id") Long id) {
         clienteService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
-}
+    }
+

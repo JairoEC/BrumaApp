@@ -28,10 +28,20 @@ public class ClienteService {
             c.setEmail(datos.getEmail());
             c.setTelefono(datos.getTelefono());
             c.setDireccion(datos.getDireccion());
-            c.setDni(datos.getDni());
+
+            // Solo actualiza DNI si realmente llega desde el frontend
+            if (datos.getDni() != null) {
+               c.setDni(datos.getDni());
+           }
+
             return clienteRepository.save(c);
         }).orElseThrow(() -> new RuntimeException("Cliente no encontrado: " + id));
     }
 
-    public void eliminar(Long id) { clienteRepository.deleteById(id); }
+    public void eliminar(Long id) {
+        if (!clienteRepository.existsById(id)) {
+            throw new RuntimeException("Cliente no encontrado: " + id);
+        }
+        clienteRepository.deleteById(id);
+    }
 }
